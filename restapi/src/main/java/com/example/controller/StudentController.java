@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.base.BaseResponse;
+import com.example.data.DataStore;
 import com.example.management.StudentManagement;
 import com.example.model.StudentModel;
 
@@ -20,7 +21,7 @@ public class StudentController {
 			@DefaultValue("") @RequestParam("name") String name,
 			@DefaultValue("-1") @RequestParam("id") int id
 			) {
-		StudentManagement student_management = new StudentManagement(null);
+		StudentManagement student_management = new StudentManagement(DataStore.students);
 		List<StudentModel> data;
 		if (!name.equals("") && id == -1) {
 			if (name.equals("") && id != -1) {
@@ -41,7 +42,7 @@ public class StudentController {
 	@RequestMapping(value="/students/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public BaseResponse getDetail(@PathVariable("id") int id) {
-		StudentManagement student_management = new StudentManagement(null);
+		StudentManagement student_management = new StudentManagement(DataStore.students);
 		StudentModel data = student_management.getDetail(id);
 		return new BaseResponse(200, data, "");
 	}
@@ -49,7 +50,7 @@ public class StudentController {
 	@RequestMapping(value="/students/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public BaseResponse removeClass(@PathVariable("id") int id) {
-		StudentManagement student_management = new StudentManagement(null);
+		StudentManagement student_management = new StudentManagement(DataStore.students);
 		student_management.Delete(id);
 		return new BaseResponse(200, "", "");
 	}

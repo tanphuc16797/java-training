@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.base.BaseResponse;
+import com.example.data.DataStore;
 import com.example.management.ClassManagement;
 import com.example.management.StudentManagement;
 import com.example.model.ClassModel;
@@ -22,7 +23,7 @@ public class ClassController {
 	@RequestMapping(value="/classes", method = RequestMethod.GET)
 	@ResponseBody
 	public BaseResponse getAll(@DefaultValue("") @RequestParam("name") String name) {
-		ClassManagement class_management = new ClassManagement(null);
+		ClassManagement class_management = new ClassManagement(DataStore.classes);
 		List<ClassModel> data;
 		if (!name.equals("")) {
 			data = class_management.getList();
@@ -35,7 +36,7 @@ public class ClassController {
 	@RequestMapping(value="/classes/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public BaseResponse getDetail(@PathVariable("id") int id) {
-		ClassManagement class_management = new ClassManagement(null);
+		ClassManagement class_management = new ClassManagement(DataStore.classes);
 		ClassModel data = class_management.getDetail(id);
 		return new BaseResponse(200, data, "");
 	}
@@ -43,7 +44,7 @@ public class ClassController {
 	@RequestMapping(value="/classes/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public BaseResponse removeClass(@PathVariable("id") int id) {
-		ClassManagement class_management = new ClassManagement(null);
+		ClassManagement class_management = new ClassManagement(DataStore.classes);
 		class_management.Delete(id);
 		return new BaseResponse(200, "", "");
 	}
@@ -51,7 +52,7 @@ public class ClassController {
 	@RequestMapping(value="/classes/{id}/students", method = RequestMethod.GET)
 	@ResponseBody
 	public BaseResponse getStudentOfClass(@PathVariable("id") int id) {
-		StudentManagement student_management = new StudentManagement(null);
+		StudentManagement student_management = new StudentManagement(DataStore.students);
 		List<StudentModel> data = student_management.findStudentByClassId(id);
 		return new BaseResponse(200, data, "");
 	}
