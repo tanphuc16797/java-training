@@ -54,6 +54,18 @@ public class BaseManagement <T> implements CRUDService<T> {
 		}
 	}
 
+	public int getNewId() {
+		// TODO Auto-generated method stub
+		int max_id = 0;
+		for (T item : getItems()) {
+			BaseModel base_item = (BaseModel) item;
+			if (base_item.getId() > max_id) {
+				max_id = base_item.getId();
+			}
+		}
+		return max_id;
+	}
+	
 	public List<T> getItems() {
 		return items;
 	}
