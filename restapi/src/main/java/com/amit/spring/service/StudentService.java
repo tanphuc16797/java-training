@@ -4,15 +4,14 @@ import com.amit.spring.domain.ClassDomain;
 import com.amit.spring.domain.StudentDomain;
 import com.amit.spring.model.Class;
 import com.amit.spring.model.Student;
-import com.amit.spring.model.request.CreateClassRequest;
 import com.amit.spring.model.request.CreateStudentRequest;
-import com.amit.spring.model.request.EditClassRequest;
 import com.amit.spring.model.request.EditStudentRequest;
-import com.amit.spring.model.request.FindClassByNameRequest;
 import com.amit.spring.model.request.FindStudentByNameRequest;
 import com.amit.spring.model.response.BaseResponse;
 import com.amit.spring.model.utils.ApiException;
 import com.amit.spring.model.utils.ERROR;
+import com.amit.spring.repository.ClassRepository;
+import com.amit.spring.repository.StudentRepository;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -28,19 +27,19 @@ public class StudentService {
     private static final Logger LOGGER = LogManager.getLogger(StudentService.class);
 
     @Autowired
-    StudentDomain studentDomain;
+    StudentRepository studentRepository;
     @Autowired
-    ClassDomain classDomain;
+    ClassRepository classRepository;
 
     public BaseResponse<List<Student>> getAllStudent(){
         BaseResponse<List<Student>> response = new BaseResponse<>();
-        response.setData(studentDomain.getAllStudent());
+        response.setData(studentRepository.findAll());
         return response;
     }
     
     public BaseResponse<Student> getStudent(int studentId) throws ApiException{
     	BaseResponse<Student> response = new BaseResponse<>();
-    	Student student = studentDomain.findId(studentId);
+    	Student student = studentRepository.findById(studentId).get();
         if (student == null){
             LOGGER.debug("StudentID is not existed" );
             throw new ApiException(ERROR.INVALID_PARAM , "Mã sinh viên không tồn tại");
@@ -49,19 +48,17 @@ public class StudentService {
         return response;
     }
     
-    public BaseResponse<Student> getStudentByName(FindStudentByNameRequest request) throws ApiException{
-    	BaseResponse<Student> response = new BaseResponse<>();
-    	Student student = studentDomain.findByName(request.getName());
-        if (student == null){
-            LOGGER.debug("ClassName is not existed" );
-            throw new ApiException(ERROR.INVALID_PARAM , "Tên lớp không tồn tại");
-        }
-        response.setData(student);
+    public BaseResponse<List<Student>> getStudentByName(FindStudentByNameRequest request) throws ApiException{
+    	BaseResponse<List<Student>> response = new BaseResponse<>();
+    	List<Student> students = studentRepository.findByName(request.getName());
+        response.setData(students);
         return response;
     }
     
-    public BaseResponse<String> createdStudent(CreateStudentRequest request) throws ApiException{
-        if (StringUtils.isBlank(request.getName())){
+    public BaseResponse<Student> createdStudent(CreateStudentRequest request) throws ApiException{
+    	BaseResponse<Student> response = new BaseResponse<>();
+    	
+    	if (StringUtils.isBlank(request.getName())){
             LOGGER.debug("Studentname blank" );
             throw new ApiException(ERROR.INVALID_PARAM , "Tên của sinh viên không được để trống");
         }
@@ -71,18 +68,23 @@ public class StudentService {
             throw new ApiException(ERROR.INVALID_PARAM , "Mã sinh viên không được để trống");
         }
         
-        Class aClass = classDomain.findId(request.getClassId());
+        Class aClass = classRepository.findById(request.getClassId()).get();
         if (aClass == null){
             LOGGER.debug("ClassID is not existed" );
             throw new ApiException(ERROR.INVALID_PARAM , "Mã lớp không tồn tại");
         }
 
-        studentDomain.createStudent(request.getName(), aClass);
-        return new BaseResponse<>();
+        Student student = new Student();
+        student.setName(request.getName());
+        student.setAClass(aClass);
+        studentRepository.save(student);
+        
+        response.setData(student);
+        return response;
     }
 
     public BaseResponse<String> editedStudent(EditStudentRequest request, int studentId) throws ApiException{
-    	Student student = studentDomain.findId(studentId);
+    	Student student = studentRepository.findById(studentId).get();
         if (student == null){
             LOGGER.debug("StudentID is not existed" );
             throw new ApiException(ERROR.INVALID_PARAM , "Mã sinh viên không tồn tại");
@@ -92,18 +94,18 @@ public class StudentService {
             throw new ApiException(ERROR.INVALID_PARAM , "Tên của sinh viên không được để trống");
         }
 
-        studentDomain.editStudent(student, request.getName());
+        studentRepository.setStudentNameById(request.getName(), student.getId());
         return new BaseResponse<>();
     }
     
-    public BaseResponse<String> deletedStudent(int id) throws ApiException{
-        Student student = studentDomain.findId(id);
+    public BaseResponse<String> deletedStudent(int studentId) throws ApiException{
+    	Student student = studentRepository.findById(studentId).get();
         if (student == null){
             LOGGER.debug("StudentID is not existed" );
             throw new ApiException(ERROR.INVALID_PARAM , "Mã sinh viên không tồn tại");
         }
 
-        studentDomain.deleteStudent(student);
+        studentRepository.delete(student);
         return new BaseResponse<>();
     }
     

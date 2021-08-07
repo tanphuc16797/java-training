@@ -28,12 +28,12 @@ public class StudentController {
     ) throws ApiException{return studentService.getStudent(studentId);}
     
     @GetMapping("/find-by-name")
-    public BaseResponse<Student> getClassByName(
+    public BaseResponse<List<Student>> getClassByName(
     		@RequestParam FindStudentByNameRequest request
     ) throws ApiException{return studentService.getStudentByName(request);}
 
     @PostMapping
-    public BaseResponse<String> createClass(
+    public BaseResponse<Student> createClass(
     		@RequestBody CreateStudentRequest request
     ) throws ApiException{return studentService.createdStudent(request);}
 

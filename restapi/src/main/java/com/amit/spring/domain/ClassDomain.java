@@ -2,9 +2,12 @@ package com.amit.spring.domain;
 
 import com.amit.spring.model.Class;
 import com.amit.spring.model.Student;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
 
 @Component
 public class ClassDomain {

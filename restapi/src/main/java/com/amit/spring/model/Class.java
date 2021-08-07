@@ -4,10 +4,29 @@ import lombok.Data;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 @Data
+@Entity
 public class Class {
+    @Id
+    @GeneratedValue(
+    		strategy = GenerationType.AUTO
+		)
     private int id;
     private String name;
+    
+    @OneToMany(
+    		mappedBy = "aClass",
+    		cascade = CascadeType.ALL,
+    		fetch = FetchType.LAZY
+		)
     private Set<Student> students;
 
     @Override

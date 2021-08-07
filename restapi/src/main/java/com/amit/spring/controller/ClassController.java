@@ -18,7 +18,6 @@ public class ClassController {
     @Autowired
     private ClassService classService;
 
-
     @GetMapping
     public BaseResponse<List<Class>> getAllClass(
 	) throws ApiException{return classService.getAllClass();}
@@ -29,12 +28,12 @@ public class ClassController {
     ) throws ApiException{return classService.getClass(classId);}
     
     @GetMapping("/find-by-name")
-    public BaseResponse<Class> getClassByName(
+    public BaseResponse<List<Class>> getClassByName(
     		@RequestParam FindClassByNameRequest request
     ) throws ApiException{return classService.getClassByName(request);}
 
     @PostMapping
-    public BaseResponse<String> createClass(
+    public BaseResponse<Class> createClass(
     		@RequestBody CreateClassRequest request
     ) throws ApiException{return classService.createdClass(request);}
 
