@@ -11,6 +11,7 @@ import com.amit.spring.model.response.BaseResponse;
 import com.amit.spring.model.utils.ApiException;
 import com.amit.spring.model.utils.ERROR;
 import com.amit.spring.repository.ClassRepository;
+import com.amit.spring.repository.CustomClassRepository;
 import com.amit.spring.repository.StudentRepository;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,9 @@ public class ClassService {
     ClassRepository classRepository;
     
     @Autowired
+    CustomClassRepository customClassRepository;
+    
+    @Autowired
     StudentRepository studentRepository;
     
 
@@ -44,7 +48,7 @@ public class ClassService {
 
     public BaseResponse<Class> getClass(int classId) throws ApiException{
     	BaseResponse<Class> response = new BaseResponse<>();
-        Class aClass = classRepository.findById(classId).get();
+        Class aClass = customClassRepository.findById(classId).get();
         if (aClass == null){
             LOGGER.debug("ClassID is not existed" );
             throw new ApiException(ERROR.INVALID_PARAM , "Mã lớp không tồn tại");
