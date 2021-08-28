@@ -1,0 +1,1 @@
+nohup java -jar -Dspring.config.location=./config/ -Dspring.profiles.active=dev spring-sercurity-1.0.jar
