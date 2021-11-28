@@ -184,19 +184,21 @@ public class UserService extends BaseService{
 
         List<Future<String>> tasks = new ArrayList<>();
         String uniqueCode = simpleDateFormat.format(today);
-        int count = 0;
+        int itemCount = 0;
         for (Iterator<Row> it = rowIterator; it.hasNext(); ) {
-            count += 1;
-            String finalUniqueCode = uniqueCode + "_" + count;
+            itemCount += 1;
+            String finalUniqueCode = uniqueCode + "_" + itemCount;
             Future<String> task = fixPool.submit(
                     () -> insertUserSerializer.makeInsertBody(it.next(), finalUniqueCode, localDate.getYear(), passwordEncoder, passwordStore)
                 );
             tasks.add(task);
         }
 
+        int count = 0;
         for (Future<String> task : tasks ){
             try {
                 insertBody += task.get() + ',';
+                count += 1;
             }catch (Exception e){
             }
         }
