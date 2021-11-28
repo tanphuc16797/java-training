@@ -93,14 +93,8 @@ public class InsertUserSerializer {
         String birthday = row.getCell(ExcelTemplate.ImportUserTemplate.CellIndex.BIRTHDAY).toString();
         String password = row.getCell(ExcelTemplate.ImportUserTemplate.CellIndex.PASSWORD).toString();
 
-        int year = Integer.parseInt(birthday.split(
-                ExcelTemplate.ImportUserTemplate.DateFormat.separate
-        )[ExcelTemplate.ImportUserTemplate.DateFormat.YEAR]);
-
-        String encodedPassword = "";
-
         userOutbox.setName(fullName);
-        userOutbox.setPassword(encodedPassword);
+        userOutbox.setPassword(password);
         userOutbox.setBirthday(birthday);
         return userOutbox;
     }
