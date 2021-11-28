@@ -1,5 +1,0 @@
-com\jamesye\starter\realtimeserver\utils\WebSocketClient.class
-com\jamesye\starter\realtimeserver\consummer\ChatModule.class
-com\jamesye\starter\realtimeserver\consummer\ChatMessage.class
-com\jamesye\starter\realtimeserver\ServerCommandLineRunner.class
-com\jamesye\starter\realtimeserver\RealTimeServerApplication.class
