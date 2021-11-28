@@ -189,7 +189,7 @@ public class UserService extends BaseService{
             itemCount += 1;
             String finalUniqueCode = uniqueCode + "_" + itemCount;
             Future<String> task = fixPool.submit(
-                    () -> insertUserSerializer.makeInsertBody(it.next(), finalUniqueCode, localDate.getYear(), passwordEncoder, passwordStore)
+                    () -> insertUserSerializer.makeInsertUserBody(it.next(), finalUniqueCode, localDate.getYear(), passwordEncoder, passwordStore)
                 );
             tasks.add(task);
         }
@@ -208,6 +208,65 @@ public class UserService extends BaseService{
         }
 
         userDomain.insertUsers(insertBody);
+        totalTime = System.currentTimeMillis() - t1;
+        MainResponse<Long> response = new MainResponse<>();
+        response.setData(totalTime);
+        response.setMessage(errors.toString());
+        return response;
+    }
+
+    public MainResponse<Long> importedUserOutboxesByExcel(MultipartFile file) throws ApiException {
+        long t1 = System.currentTimeMillis();
+        long totalTime = 0;
+
+        InsertUserSerializer insertUserSerializer = new InsertUserSerializer(
+                ExcelTemplate.ImportUserTemplate.tableName,
+                ExcelTemplate.ImportUserTemplate.parameters);
+
+        List<String> errors = new ArrayList<>();
+        String insertBody = "";
+        Iterator<Row> rowIterator = null;
+        OPCPackage opcPackage = null;
+        InputStream uploadStream;
+        XSSFWorkbook workbook;
+        XSSFSheet sheet;
+
+        try {
+            uploadStream = file.getInputStream();
+            opcPackage = OPCPackage.open(uploadStream);
+            workbook = new XSSFWorkbook(opcPackage);
+            sheet = workbook.getSheetAt(0);
+            rowIterator = sheet.iterator();
+        } catch (Exception e) {
+            throw new ApiException(ERROR.SYSTEM_ERROR, e.getMessage());
+        } finally {
+            try {opcPackage.close();} catch (IOException e) {}
+        }
+
+        List<Future<String>> tasks = new ArrayList<>();
+        int itemCount = 0;
+        for (Iterator<Row> it = rowIterator; it.hasNext(); ) {
+            itemCount += 1;
+            Future<String> task = fixPool.submit(
+                    () -> insertUserSerializer.makeInsertUserOutboxBody(it.next())
+            );
+            tasks.add(task);
+        }
+
+        int count = 0;
+        for (Future<String> task : tasks ){
+            try {
+                insertBody += task.get() + ',';
+                count += 1;
+            }catch (Exception e){
+            }
+        }
+
+        if (!insertBody.isEmpty()){
+            insertBody = insertBody.substring(0, insertBody.length() - 1);
+        }
+
+        userDomain.insertUserOutboxes(insertBody);
         totalTime = System.currentTimeMillis() - t1;
         MainResponse<Long> response = new MainResponse<>();
         response.setData(totalTime);

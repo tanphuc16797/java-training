@@ -19,4 +19,10 @@ public class CustomUserRepositoryImp implements CustomUserRepository{
     public void importUsers(String insertScript) {
         jdbcTemplate.execute(String.format("INSERT INTO %s.user(username, password, name, age) VALUES %s;", defaultSchema, insertScript));
     }
+
+    @Override
+    @Transactional
+    public void importUserOutboxes(String insertScript) {
+        jdbcTemplate.execute(String.format("INSERT INTO %s.user(username, password, name, age) VALUES %s;", defaultSchema, insertScript));
+    }
 }

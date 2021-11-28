@@ -29,6 +29,6 @@ public class UserController {
     }
     @PostMapping("import/excel/async")
     public MainResponse<Long> createdUsersByExcelAsync(@RequestPart("file") MultipartFile file) throws ApiException{
-        return userService.importedUsersByExcel(file);
+        return userService.importedUserOutboxesByExcel(file);
     }
 }

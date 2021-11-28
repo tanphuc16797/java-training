@@ -1,5 +1,6 @@
 package com.amit.springsercurity.model.serializer;
 import com.amit.springsercurity.database.entity.User;
+import com.amit.springsercurity.database.entity.UserOutbox;
 import com.amit.springsercurity.domain.PasswordStore;
 import com.amit.springsercurity.redis.entity.PasswordDTO;
 import com.amit.springsercurity.util.ICheckBCryptPasswordEncoder;
@@ -35,12 +36,21 @@ public class InsertUserSerializer {
         return String.format("INSERT INTO %s(%s) VALUES ", this.tableName, this.parameters);
     }
 
-    public String makeInsertBody(User user){
+    public String makeInsertUserBody(User user){
         return String.format("('%s','%s','%s','%s')", user.getUserName(), user.getPassword(), user.getName(), user.getAge());
     }
 
-    public String makeInsertBody(Row row, String uniqueCode, int nowYear, ICheckBCryptPasswordEncoder passwordEncoder, PasswordStore passwordStore){
-        return this.makeInsertBody(rowDataToUser(row, uniqueCode, nowYear, passwordEncoder, passwordStore));
+    public String makeInsertUserOutboxBody(UserOutbox userOutbox){
+        return String.format("('%s','%s','%s')", userOutbox.getName(), userOutbox.getPassword(), userOutbox.getBirthday());
+    }
+
+    public String makeInsertUserBody(Row row, String uniqueCode, int nowYear, ICheckBCryptPasswordEncoder passwordEncoder, PasswordStore passwordStore){
+        return this.makeInsertUserBody(rowDataToUser(row, uniqueCode, nowYear, passwordEncoder, passwordStore));
+    }
+
+
+    public String makeInsertUserOutboxBody(Row row){
+        return this.makeInsertUserOutboxBody(rowDataToUserOutbox(row));
     }
 
     public String buildInsertSql(){
@@ -74,6 +84,25 @@ public class InsertUserSerializer {
         user.setPassword(encodedPassword);
         user.setAge(age);
         return user;
+    }
+
+    public UserOutbox rowDataToUserOutbox(Row row){
+        UserOutbox userOutbox = new UserOutbox();
+
+        String fullName = row.getCell(ExcelTemplate.ImportUserTemplate.CellIndex.FULLNAME).toString();
+        String birthday = row.getCell(ExcelTemplate.ImportUserTemplate.CellIndex.BIRTHDAY).toString();
+        String password = row.getCell(ExcelTemplate.ImportUserTemplate.CellIndex.PASSWORD).toString();
+
+        int year = Integer.parseInt(birthday.split(
+                ExcelTemplate.ImportUserTemplate.DateFormat.separate
+        )[ExcelTemplate.ImportUserTemplate.DateFormat.YEAR]);
+
+        String encodedPassword = "";
+
+        userOutbox.setName(fullName);
+        userOutbox.setPassword(encodedPassword);
+        userOutbox.setBirthday(birthday);
+        return userOutbox;
     }
 
 }

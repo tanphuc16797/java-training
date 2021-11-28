@@ -22,4 +22,8 @@ public class UserDomain {
     }
 
     public void insertUsers(String sqlString) {customUserRepository.importUsers(sqlString); }
+
+    public void insertUserOutboxes(String sqlString) {customUserRepository.importUserOutboxes(sqlString); }
+
+
 }
